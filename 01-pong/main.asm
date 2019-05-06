@@ -1,2 +1,1 @@
-;read "pong.asm"
-read "otro.asm"
+read "pong.asm"

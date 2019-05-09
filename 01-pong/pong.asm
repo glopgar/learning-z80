@@ -2,12 +2,13 @@ org &4000
 run prog_start
 
 PADDLE_HEIGHT equ &30 ;; define la altura de las palas
-PADDLE_START_POS equ &30
+PADDLE_START_POS equ &40
 
 .prog_start
 
 call make_screen_addr_table ; inicializa la tabla de coordenadas de pantalla
 call &bc14  ;Borra la pantalla
+
 
 ;; ---------------------------
 ;; -- pintado del "campo" ----
@@ -37,11 +38,14 @@ ld a,(matrix_buffer+8)
 bit 3,a
 jr z, q_not_pressed
 call paddle_1_up
+call paddle_1_up
 .q_not_pressed
+
 ;; check A key
 ld a,(matrix_buffer+8)
 bit 5,a
 jr z, a_not_pressed
+call paddle_1_down
 call paddle_1_down
 .a_not_pressed
 
@@ -52,11 +56,13 @@ ld a,(matrix_buffer+3)
 bit 3,a
 jr z, p_not_pressed
 call paddle_2_up
+call paddle_2_up
 .p_not_pressed
 ;; check L key
 ld a,(matrix_buffer+4)
 bit 4,a
 jr z, l_not_pressed
+call paddle_2_down
 call paddle_2_down
 .l_not_pressed
 
@@ -64,7 +70,7 @@ jp main_loop
 
 
 ;; ----------------------------------------------
-;; -- baja un pixel la pala 1 -------------------
+;; -- baja la pala 1 -------------------
 ;; ----------------------------------------------
 .paddle_1_down
 ;; pintar fondo en primer pixel de la pala

@@ -2,13 +2,14 @@ org &4000
 run prog_start
 
 PADDLE_HEIGHT equ &30 ;; define la altura de las palas
-PADDLE_START_POS equ &40
+PADDLE_START_POS equ &05
+PADDLE_SPEED equ &02
 
 .prog_start
 
 call make_screen_addr_table ; inicializa la tabla de coordenadas de pantalla
 call &bc14  ;Borra la pantalla
-
+call compute_max_y
 
 ;; ---------------------------
 ;; -- pintado del "campo" ----
@@ -37,16 +38,29 @@ call read_matrix ;; scan the keyboard
 ld a,(matrix_buffer+8)
 bit 3,a
 jr z, q_not_pressed
+ld a, (PADDLE_1_Y)
+sub PADDLE_SPEED
+jr c, q_not_pressed
+ld b, PADDLE_SPEED
+.loop_paddle_1_up
 call paddle_1_up
-call paddle_1_up
+djnz loop_paddle_1_up
 .q_not_pressed
 
 ;; check A key
 ld a,(matrix_buffer+8)
 bit 5,a
 jr z, a_not_pressed
+ld a, (PADDLE_1_Y)
+ld c, a
+ld a, (MAX_Y)
+sub c
+sub PADDLE_SPEED
+jr c, a_not_pressed
+ld b, PADDLE_SPEED
+.loop_paddle_1_down
 call paddle_1_down
-call paddle_1_down
+djnz loop_paddle_1_down
 .a_not_pressed
 
 .move_paddle_2
@@ -55,15 +69,29 @@ call paddle_1_down
 ld a,(matrix_buffer+3)
 bit 3,a
 jr z, p_not_pressed
+ld a, (PADDLE_2_Y)
+sub PADDLE_SPEED
+jr c, p_not_pressed
+ld b, PADDLE_SPEED
+.loop_paddle_2_up
 call paddle_2_up
-call paddle_2_up
+djnz loop_paddle_2_up
 .p_not_pressed
+
 ;; check L key
 ld a,(matrix_buffer+4)
 bit 4,a
 jr z, l_not_pressed
+ld a, (PADDLE_2_Y)
+ld c, a
+ld a, (MAX_Y)
+sub c
+sub PADDLE_SPEED
+jr c, l_not_pressed
+ld b, PADDLE_SPEED
+.loop_paddle_2_down
 call paddle_2_down
-call paddle_2_down
+djnz loop_paddle_2_down
 .l_not_pressed
 
 jp main_loop
@@ -348,6 +376,12 @@ dec b
 out (c),c                 ;;set PSG operation: bit7=0, bit 6=0 (PSG operation: inactive)
 ret
 
+.compute_max_y
+ld a, &C8
+sub PADDLE_HEIGHT
+ld (MAX_Y), a
+ret	
+
 ;; This buffer has one byte per keyboard line. 
 ;; Each byte defines a single keyboard line, which defines 
 ;; the state for up to 8 keys.
@@ -357,11 +391,10 @@ ret
 .matrix_buffer
 defs 10
 
-
-
 ;; reservamos 400 bytes para la tabla de direcciones de memoria (200 lineas * 16bits)
 .screen_addr_table
 defs 200*2		
 
 PADDLE_1_Y defb PADDLE_START_POS
 PADDLE_2_Y defb PADDLE_START_POS
+MAX_Y defb &00

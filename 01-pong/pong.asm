@@ -126,7 +126,7 @@ add a, PADDLE_HEIGHT
 dec a
 ld l, a
 call get_screen_address
-ld a, &f0
+ld a, &0f
 ld (hl), a
 ret
 
@@ -152,7 +152,7 @@ ld h, &00
 ld a, (PADDLE_1_Y)
 ld l, a
 call get_screen_address
-ld a, &f0
+ld a, &0f
 ld (hl), a
 ret
 
@@ -161,7 +161,7 @@ ret
 ;; ----------------------------------------------
 .paddle_2_down
 ;; pintar fondo en primer pixel de la pala
-ld h, &4E
+ld h, &4F
 ld a, (PADDLE_2_Y)
 ld l, a
 call get_screen_address
@@ -172,13 +172,13 @@ ld a, (PADDLE_2_Y)
 inc a
 ld (PADDLE_2_Y), a
 ; pintar color en el ultimo pixel de la pala + 1
-ld h, &4E
+ld h, &4F
 ld a, (PADDLE_2_Y)
 add a, PADDLE_HEIGHT
 dec a
 ld l, a
 call get_screen_address
-ld a, &f0
+ld a, &0f
 ld (hl), a
 ret
 
@@ -187,7 +187,7 @@ ret
 ;; ----------------------------------------------
 .paddle_2_up
 ; pintar fondo en el ultimo pixel de la pala
-ld h, &4E
+ld h, &4F
 ld a, (PADDLE_2_Y)
 add a, PADDLE_HEIGHT
 dec a
@@ -200,11 +200,11 @@ ld a, (PADDLE_2_Y)
 dec a
 ld (PADDLE_2_Y), a
 ; pintar color en el primer pixel de la pala
-ld h, &4E
+ld h, &4F
 ld a, (PADDLE_2_Y)
 ld l, a
 call get_screen_address
-ld a, &f0
+ld a, &0f
 ld (hl), a
 ret
 
@@ -223,13 +223,13 @@ ld l, a     ; cargamos en l la coordenada Y inicial
 ld h, &00   ; la pala siempre empieza en X=0
 push hl     ; guardamos HL para incrementarlo mas tarde
 call get_screen_address ; obtenemos en HL la direccion de memoria 
-ld a, &f0   ; color de los pixeles a pintar
+ld a, &0f   ; color de los pixeles a pintar
 ld (hl), a  ; pintamos los pixeles en la direccion HL
 pop hl      ; recuperamos las coordenadas X, Y en HL
-ld h, &4E
+ld h, &4F
 push hl     ; guardamos HL para incrementarlo mas tarde
 call get_screen_address ; obtenemos en HL la direccion de memoria 
-ld a, &f0   ; color de los pixeles a pintar
+ld a, &0f   ; color de los pixeles a pintar
 ld (hl), a  ; pintamos los pixeles en la direccion HL
 pop hl      ; recuperamos las coordenadas X, Y en HL
 inc l       ; incrementamos las Y

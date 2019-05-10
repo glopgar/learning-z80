@@ -3,7 +3,7 @@ run prog_start
 
 PADDLE_HEIGHT equ &30 ;; define la altura de las palas
 PADDLE_START_POS equ &05
-PADDLE_SPEED equ &02
+PADDLE_SPEED equ &01
 
 .prog_start
 
@@ -23,11 +23,18 @@ call draw_paddles
 
 .main_loop
 
-;; wait for vsync
-ld b,&f5
-.v1 in a,(c)
-rra
-jr nc,v1
+ld b, &FF
+.slow
+nop
+djnz slow
+ld b, &FF
+.slow2
+nop
+djnz slow2
+ld b, &FF
+.slow3
+nop
+djnz slow3
 
 ;; ------------------------
 ;; --- move paddles -------
